@@ -22,6 +22,7 @@
     "react": "^18",
     "react-dom": "^18",
     "shadcn-ui": "^0.8.0",
+    "svix": "^1.18.0",
     "tailwind-merge": "^2.2.1",
     "tailwindcss-animate": "^1.0.7"
   },
