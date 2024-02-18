@@ -1,5 +1,6 @@
 import mongoose, { Mongoose } from "mongoose";
 
+
 const MONGODB_URL = process.env.MONGODB_URL;
 
 interface MongooseConnection {
@@ -19,8 +20,9 @@ export const connectToDatabase = async () => {
     }
     if (!MONGODB_URL) throw new Error('Mising MONGODB_URL');
 
-    cached.promise = cached.promise || mongoose.connect(MONGODB_URL, { dbName: 'Imaginify', bufferCommands: false }) as Promise<Mongoose>;
+    cached.promise = cached.promise || mongoose.connect(MONGODB_URL, {bufferCommands: false }) as Promise<Mongoose>;
 
     cached.conn = await cached.promise;
+    console.log(cached.conn)
     return cached.conn;
 }
