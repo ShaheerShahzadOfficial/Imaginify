@@ -22,7 +22,7 @@ const UserSchema = new Schema({
     email: { type: String, required: true, unique: true },
     createdAt: { type: Date, required: true, default: Date.now() },
     updatedAt: { type: Date, required: true, default: Date.now() },
-    creditBalance: { type: Number, default: 10 },
+    creditBalance: { type: Number, default: 20 },
     photo: { type: String, required: true },
     planId: { type: Number, default: 1 },
     username: { type: String, required: true, unique: true },

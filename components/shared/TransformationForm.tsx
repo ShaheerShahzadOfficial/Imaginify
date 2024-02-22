@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useTransition } from "react";
+import React, { useEffect, useState, useTransition } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -18,6 +18,7 @@ import {
 import { Input } from "@/components/ui/input";
 import {
   aspectRatioOptions,
+  creditFee,
   defaultValues,
   transformationTypes,
 } from "@/constants";
@@ -29,6 +30,7 @@ import TransformedImage from "./TransformedImage";
 import { getCldImageUrl } from "next-cloudinary";
 import { addImage, updateImage } from "@/lib/actions/image.actions";
 import { useRouter } from "next/navigation";
+import { InsufficientCreditsModal } from "./InsufficientCreditsModal";
 
 export const formSchema = z.object({
   title: z.string(),
@@ -56,6 +58,8 @@ const TransformationForm = ({
 
   const [isPending, startTransition] = useTransition();
   const router = useRouter();
+
+
   const initialValue =
     data && action === "Update"
       ? {
@@ -161,7 +165,8 @@ const TransformationForm = ({
           [fieldName === "prompt" ? "prompt" : "to"]: value,
         },
       }));
-    }, 1000);
+    }, 1000)();
+
     return onChangeField(value);
   };
 
@@ -176,13 +181,28 @@ const TransformationForm = ({
       setNewTransformation(null);
       
       startTransition(async () => {
-        await updateCredits(userId, -1);
+        await updateCredits(userId, creditFee);
       });
     };
+
+useEffect(() => {
+  
+if (image && (type === 'restore' || type === 'removeBackground')) {
+  setNewTransformation(transformationType.config);
+}
+
+}, [image,transformationType.config,type])
+
+
 
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+        
+        {
+          creditBalance < Math.abs(creditFee) && <InsufficientCreditsModal />
+        }
+        
         <CustomField
           control={form.control}
           render={({ field }) => <Input {...field} className="input-field" />}
@@ -198,6 +218,7 @@ const TransformationForm = ({
                 onValueChange={(value) =>
                   onSelectFieldHandler(value, field.onChange)
                 }
+                value={field.value}
               >
                 <SelectTrigger className="selct-field">
                   <SelectValue placeholder="Select Size" />
